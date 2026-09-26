@@ -9,7 +9,7 @@ Actividad 2 · Inteligencia Artificial · Ingeniería de Software · Corporació
 Requisitos: **Python 3.8 o superior**. No usa librerías externas.
 
 ```bash
-git clone <URL-DEL-REPOSITORIO>
+git clone https://github.com/Mateozzzz/Busqueda-y-sistemas-basados-en-reglas.git
 cd transmi-ruta-ia
 python main.py                                        # modo interactivo (menú)
 python main.py ruta "Portal El Dorado" "Museo del Oro"
