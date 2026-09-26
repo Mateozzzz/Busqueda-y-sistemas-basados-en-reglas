@@ -1,0 +1,43 @@
+% =============================================================================
+%  BASE DE REGLAS - Conocimiento sobre cómo moverse en la red
+% =============================================================================
+%  Forma:   conclusion(...) :- condicion1(...), condicion2(...), ... .
+%  Se lee:  "conclusión SI condición1 Y condición2 Y ..."
+%  Variables en Mayúscula. "no p(X)" = negación por fallo. distinto/2 es integrado.
+%  El motor numera las reglas en orden de aparición (R1, R2, ...).
+% =============================================================================
+
+% R1, R2: los buses circulan en ambos sentidos, así que cada tramo es bidireccional.
+tramo(A, B, T) :- siguiente(A, B, T).
+tramo(B, A, T) :- siguiente(A, B, T).
+
+% R3, R4: una estación pertenece a toda troncal en la que aparece un tramo suyo.
+pertenece(E, T) :- siguiente(E, _, T).
+pertenece(E, T) :- siguiente(_, E, T).
+
+% R5: toda estación que pertenece a alguna troncal es una estación del sistema.
+estacion(E) :- pertenece(E, _).
+
+% R6: una estación está habilitada si NO se ha reportado como cerrada.
+habilitada(E) :- estacion(E), no cerrada(E).
+
+% R7: es posible moverse de A a B por la troncal T si hay tramo y ambas están habilitadas.
+movimiento(A, B, T) :- tramo(A, B, T), habilitada(A), habilitada(B).
+
+% R8: en una estación habilitada se puede abordar cualquiera de sus troncales.
+puede_abordar(E, T) :- pertenece(E, T), habilitada(E).
+
+% R9: se puede hacer transbordo en E si E pertenece a dos troncales distintas.
+transbordo(E, T1, T2) :- pertenece(E, T1), pertenece(E, T2), distinto(T1, T2), habilitada(E).
+
+% R10, R11: las conexiones peatonales también son bidireccionales.
+caminata(A, B, M) :- conexion_peatonal(A, B, M), habilitada(A), habilitada(B).
+caminata(B, A, M) :- conexion_peatonal(A, B, M), habilitada(A), habilitada(B).
+
+% R12, R13: conocimiento descriptivo (útil para consultas).
+estacion_de_integracion(E) :- transbordo(E, _, _).
+estacion_de_integracion(E) :- caminata(E, _, _).
+
+% R14, R15: una estación es cabecera de una troncal si no tiene estación anterior en ella.
+tiene_anterior(E, T) :- siguiente(_, E, T).
+cabecera(E, T) :- siguiente(E, _, T), no tiene_anterior(E, T).

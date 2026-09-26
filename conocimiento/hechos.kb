@@ -1,0 +1,233 @@
+% =============================================================================
+%  BASE DE HECHOS - Red troncal simplificada de TransMilenio (Bogotá)
+% =============================================================================
+%  Sintaxis tipo Datalog/Prolog:
+%     predicado(arg1, arg2, ...).        % las cadenas van entre comillas
+%     % Esto es un comentario
+%
+%  IMPORTANTE: es un modelo académico. Incluye 7 troncales y ~85 estaciones.
+%  Las coordenadas son APROXIMADAS (sirven para estimar tiempos y para la
+%  heurística). Pueden reemplazarse por las del portal de datos abiertos de
+%  TransMilenio sin cambiar una sola línea de código.
+% =============================================================================
+
+% --- Parámetros del modelo ----------------------------------------------------
+parametro("velocidad_comercial_kmh", 25).   % velocidad promedio de un bus troncal
+parametro("tiempo_parada_min", 0.5).        % detención en cada estación
+parametro("tiempo_transbordo_min", 5).      % caminar dentro de la estación + esperar
+
+% --- Troncales -----------------------------------------------------------------
+troncal("A", "Caracas").
+troncal("B", "Autopista Norte").
+troncal("D", "Calle 80").
+troncal("E", "NQS Central").
+troncal("F", "Américas").
+troncal("J", "Eje Ambiental").
+troncal("K", "Calle 26").
+
+% --- Portales ------------------------------------------------------------------
+portal("Portal Norte").
+portal("Portal 80").
+portal("Portal Américas").
+portal("Portal El Dorado").
+
+% --- siguiente(EstacionA, EstacionB, Troncal): A y B son consecutivas ----------
+%     (la regla R1/R2 las vuelve bidireccionales)
+
+% Troncal B - Autopista Norte (norte -> sur)
+siguiente("Portal Norte", "Toberín", "B").
+siguiente("Toberín", "Calle 161", "B").
+siguiente("Calle 161", "Mazurén", "B").
+siguiente("Mazurén", "Calle 146", "B").
+siguiente("Calle 146", "Calle 142", "B").
+siguiente("Calle 142", "Alcalá", "B").
+siguiente("Alcalá", "Prado", "B").
+siguiente("Prado", "Calle 127", "B").
+siguiente("Calle 127", "Pepe Sierra", "B").
+siguiente("Pepe Sierra", "Calle 106", "B").
+siguiente("Calle 106", "Calle 100", "B").
+siguiente("Calle 100", "Virrey", "B").
+siguiente("Virrey", "Calle 85", "B").
+siguiente("Calle 85", "Héroes", "B").
+
+% Troncal A - Caracas (norte -> centro)
+siguiente("Héroes", "Calle 76", "A").
+siguiente("Calle 76", "Calle 72", "A").
+siguiente("Calle 72", "Flores", "A").
+siguiente("Flores", "Calle 63", "A").
+siguiente("Calle 63", "Calle 57", "A").
+siguiente("Calle 57", "Marly", "A").
+siguiente("Marly", "Calle 45", "A").
+siguiente("Calle 45", "Av. 39", "A").
+siguiente("Av. 39", "Calle 34", "A").
+siguiente("Calle 34", "Calle 26", "A").
+siguiente("Calle 26", "Calle 22", "A").
+siguiente("Calle 22", "Calle 19", "A").
+siguiente("Calle 19", "Av. Jiménez", "A").
+siguiente("Av. Jiménez", "Tercer Milenio", "A").
+
+% Troncal D - Calle 80 (occidente -> oriente)
+siguiente("Portal 80", "Quirigua", "D").
+siguiente("Quirigua", "Carrera 90", "D").
+siguiente("Carrera 90", "Av. Ciudad de Cali", "D").
+siguiente("Av. Ciudad de Cali", "Granja - Carrera 77", "D").
+siguiente("Granja - Carrera 77", "Minuto de Dios", "D").
+siguiente("Minuto de Dios", "Av. Boyacá", "D").
+siguiente("Av. Boyacá", "Ferias", "D").
+siguiente("Ferias", "Av. 68", "D").
+siguiente("Av. 68", "Carrera 53", "D").
+siguiente("Carrera 53", "Carrera 47", "D").
+siguiente("Carrera 47", "Escuela Militar", "D").
+siguiente("Escuela Militar", "Polo", "D").
+siguiente("Polo", "Héroes", "D").
+
+% Troncal E - NQS Central (norte -> sur)
+siguiente("Calle 100", "La Castellana", "E").
+siguiente("La Castellana", "NQS Calle 75", "E").
+siguiente("NQS Calle 75", "Av. Chile", "E").
+siguiente("Av. Chile", "7 de Agosto", "E").
+siguiente("7 de Agosto", "Movistar Arena", "E").
+siguiente("Movistar Arena", "Campín", "E").
+siguiente("Campín", "U. Nacional", "E").
+siguiente("U. Nacional", "Av. El Dorado", "E").
+siguiente("Av. El Dorado", "CAD", "E").
+siguiente("CAD", "Paloquemao", "E").
+siguiente("Paloquemao", "Ricaurte", "E").
+% Interconector de la Calle 80: los servicios de la NQS entran a la Calle 80
+% a la altura de Escuela Militar (se modela como un tramo de la troncal E).
+siguiente("NQS Calle 75", "Escuela Militar", "E").
+
+% Troncal F - Américas (centro -> occidente)
+siguiente("Av. Jiménez", "De La Sabana", "F").
+siguiente("De La Sabana", "San Façón - Carrera 22", "F").
+siguiente("San Façón - Carrera 22", "Ricaurte", "F").
+siguiente("Ricaurte", "CDS - Carrera 32", "F").
+siguiente("CDS - Carrera 32", "Zona Industrial", "F").
+siguiente("Zona Industrial", "Carrera 43", "F").
+siguiente("Carrera 43", "Puente Aranda", "F").
+siguiente("Puente Aranda", "Distrito Grafiti", "F").
+siguiente("Distrito Grafiti", "Pradera", "F").
+siguiente("Pradera", "Marsella", "F").
+siguiente("Marsella", "Américas - Av. Boyacá", "F").
+siguiente("Américas - Av. Boyacá", "Mandalay", "F").
+siguiente("Mandalay", "Banderas", "F").
+siguiente("Banderas", "Transversal 86", "F").
+siguiente("Transversal 86", "Biblioteca Tintal", "F").
+siguiente("Biblioteca Tintal", "Patio Bonito", "F").
+siguiente("Patio Bonito", "Portal Américas", "F").
+
+% Troncal J - Eje Ambiental
+siguiente("Av. Jiménez", "Museo del Oro", "J").
+siguiente("Museo del Oro", "Las Aguas", "J").
+
+% Troncal K - Calle 26 (occidente -> centro)
+siguiente("Portal El Dorado", "Modelia", "K").
+siguiente("Modelia", "Normandía", "K").
+siguiente("Normandía", "Av. Rojas", "K").
+siguiente("Av. Rojas", "El Tiempo - Maloka", "K").
+siguiente("El Tiempo - Maloka", "Salitre - El Greco", "K").
+siguiente("Salitre - El Greco", "CAN", "K").
+siguiente("CAN", "Gobernación", "K").
+siguiente("Gobernación", "Quinta Paredes", "K").
+siguiente("Quinta Paredes", "Corferias", "K").
+siguiente("Corferias", "Ciudad Universitaria", "K").
+siguiente("Ciudad Universitaria", "Concejo de Bogotá", "K").
+siguiente("Concejo de Bogotá", "Centro Memoria", "K").
+siguiente("Centro Memoria", "Universidades", "K").
+
+% --- Conexiones peatonales entre estaciones (minutos a pie) --------------------
+conexion_peatonal("Universidades", "Las Aguas", 4).   % túnel peatonal
+
+% --- coordenadas(Estacion, Latitud, Longitud)  [aproximadas] -------------------
+% Troncal B
+coordenadas("Portal Norte", 4.7546, -74.0460).
+coordenadas("Toberín", 4.7465, -74.0467).
+coordenadas("Calle 161", 4.7420, -74.0471).
+coordenadas("Mazurén", 4.7340, -74.0478).
+coordenadas("Calle 146", 4.7290, -74.0483).
+coordenadas("Calle 142", 4.7250, -74.0487).
+coordenadas("Alcalá", 4.7190, -74.0493).
+coordenadas("Prado", 4.7130, -74.0500).
+coordenadas("Calle 127", 4.7070, -74.0507).
+coordenadas("Pepe Sierra", 4.6985, -74.0520).
+coordenadas("Calle 106", 4.6925, -74.0535).
+coordenadas("Calle 100", 4.6865, -74.0550).
+coordenadas("Virrey", 4.6760, -74.0560).
+coordenadas("Calle 85", 4.6720, -74.0566).
+coordenadas("Héroes", 4.6665, -74.0575).
+% Troncal A
+coordenadas("Calle 76", 4.6630, -74.0590).
+coordenadas("Calle 72", 4.6590, -74.0605).
+coordenadas("Flores", 4.6545, -74.0615).
+coordenadas("Calle 63", 4.6490, -74.0628).
+coordenadas("Calle 57", 4.6430, -74.0640).
+coordenadas("Marly", 4.6370, -74.0650).
+coordenadas("Calle 45", 4.6320, -74.0660).
+coordenadas("Av. 39", 4.6270, -74.0675).
+coordenadas("Calle 34", 4.6215, -74.0695).
+coordenadas("Calle 26", 4.6165, -74.0715).
+coordenadas("Calle 22", 4.6120, -74.0735).
+coordenadas("Calle 19", 4.6085, -74.0752).
+coordenadas("Av. Jiménez", 4.6040, -74.0775).
+coordenadas("Tercer Milenio", 4.5975, -74.0805).
+% Troncal D
+coordenadas("Portal 80", 4.7125, -74.1225).
+coordenadas("Quirigua", 4.7100, -74.1195).
+coordenadas("Carrera 90", 4.7070, -74.1160).
+coordenadas("Av. Ciudad de Cali", 4.7040, -74.1125).
+coordenadas("Granja - Carrera 77", 4.6990, -74.1075).
+coordenadas("Minuto de Dios", 4.6960, -74.1040).
+coordenadas("Av. Boyacá", 4.6935, -74.1010).
+coordenadas("Ferias", 4.6905, -74.0975).
+coordenadas("Av. 68", 4.6870, -74.0925).
+coordenadas("Carrera 53", 4.6830, -74.0870).
+coordenadas("Carrera 47", 4.6800, -74.0820).
+coordenadas("Escuela Militar", 4.6765, -74.0760).
+coordenadas("Polo", 4.6725, -74.0705).
+% Troncal E
+coordenadas("La Castellana", 4.6815, -74.0640).
+coordenadas("NQS Calle 75", 4.6690, -74.0735).
+coordenadas("Av. Chile", 4.6660, -74.0745).
+coordenadas("7 de Agosto", 4.6580, -74.0760).
+coordenadas("Movistar Arena", 4.6535, -74.0770).
+coordenadas("Campín", 4.6490, -74.0780).
+coordenadas("U. Nacional", 4.6395, -74.0800).
+coordenadas("Av. El Dorado", 4.6255, -74.0835).
+coordenadas("CAD", 4.6205, -74.0850).
+coordenadas("Paloquemao", 4.6150, -74.0870).
+coordenadas("Ricaurte", 4.6105, -74.0890).
+% Troncal F
+coordenadas("De La Sabana", 4.6065, -74.0810).
+coordenadas("San Façón - Carrera 22", 4.6085, -74.0850).
+coordenadas("CDS - Carrera 32", 4.6120, -74.0935).
+coordenadas("Zona Industrial", 4.6140, -74.0990).
+coordenadas("Carrera 43", 4.6160, -74.1040).
+coordenadas("Puente Aranda", 4.6180, -74.1100).
+coordenadas("Distrito Grafiti", 4.6195, -74.1160).
+coordenadas("Pradera", 4.6210, -74.1225).
+coordenadas("Marsella", 4.6225, -74.1300).
+coordenadas("Américas - Av. Boyacá", 4.6240, -74.1355).
+coordenadas("Mandalay", 4.6255, -74.1405).
+coordenadas("Banderas", 4.6265, -74.1455).
+coordenadas("Transversal 86", 4.6275, -74.1525).
+coordenadas("Biblioteca Tintal", 4.6280, -74.1580).
+coordenadas("Patio Bonito", 4.6285, -74.1640).
+coordenadas("Portal Américas", 4.6290, -74.1720).
+% Troncal J
+coordenadas("Museo del Oro", 4.6020, -74.0725).
+coordenadas("Las Aguas", 4.6025, -74.0680).
+% Troncal K
+coordenadas("Portal El Dorado", 4.6770, -74.1240).
+coordenadas("Modelia", 4.6730, -74.1215).
+coordenadas("Normandía", 4.6690, -74.1190).
+coordenadas("Av. Rojas", 4.6645, -74.1160).
+coordenadas("El Tiempo - Maloka", 4.6600, -74.1130).
+coordenadas("Salitre - El Greco", 4.6555, -74.1100).
+coordenadas("CAN", 4.6490, -74.1060).
+coordenadas("Gobernación", 4.6440, -74.1025).
+coordenadas("Quinta Paredes", 4.6395, -74.0985).
+coordenadas("Corferias", 4.6355, -74.0950).
+coordenadas("Ciudad Universitaria", 4.6315, -74.0910).
+coordenadas("Concejo de Bogotá", 4.6270, -74.0860).
+coordenadas("Centro Memoria", 4.6195, -74.0770).
+coordenadas("Universidades", 4.6055, -74.0665).
